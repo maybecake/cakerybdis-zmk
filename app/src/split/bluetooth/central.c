@@ -951,8 +951,16 @@ static void split_central_connected(struct bt_conn *conn, uint8_t conn_err) {
 static void split_central_disconnected(struct bt_conn *conn, uint8_t reason) {
     char addr[BT_ADDR_LE_STR_LEN];
     int err;
+    struct bt_conn_info info;
 
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
+
+    bt_conn_get_info(conn, &info);
+
+    if (info.role != BT_CONN_ROLE_CENTRAL) {
+        LOG_DBG("SKIPPING FOR ROLE %d", info.role);
+        return;
+    }
 
     LOG_DBG("Disconnected: %s (reason %d)", addr, reason);
 
